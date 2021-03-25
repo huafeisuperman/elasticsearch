@@ -745,4 +745,9 @@ public class ActionModule extends AbstractModule {
     public RestController getRestController() {
         return restController;
     }
+
+    public void reloadPlugins(List<ActionPlugin> actionPlugins) {
+        actionPlugins.stream().forEach(plugin->plugin.getRestHandlers(settings, restController, clusterSettings, indexScopedSettings,
+            settingsFilter, indexNameExpressionResolver, () -> clusterService.state().nodes()));
+    }
 }

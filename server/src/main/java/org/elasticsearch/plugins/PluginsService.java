@@ -164,7 +164,7 @@ public class PluginsService {
         pluginsLoaded.addAll(loaded);
 
         this.info = new PluginsAndModules(pluginsList, modulesList);
-        this.plugins = Collections.unmodifiableList(pluginsLoaded);
+        this.plugins = pluginsLoaded;
 
         // Checking expected plugins
         List<String> mandatoryPlugins = MANDATORY_SETTING.get(settings);
@@ -628,5 +628,13 @@ public class PluginsService {
     public <T> List<T> filterPlugins(Class<T> type) {
         return plugins.stream().filter(x -> type.isAssignableFrom(x.v2().getClass()))
             .map(p -> ((T)p.v2())).collect(Collectors.toList());
+    }
+
+    public Tuple<PluginInfo, Plugin> addDynimicPlugin(Path path) throws Exception {
+        final Bundle bundle = readPluginBundle(new HashSet<>(), path, "plugin");
+        Tuple<PluginInfo, Plugin> loaded = loadBundles(new HashSet<Bundle>(){{add(bundle);}}).get(0);
+        plugins.add(loaded);
+        info.addPlugin(loaded.v1());
+        return loaded;
     }
 }

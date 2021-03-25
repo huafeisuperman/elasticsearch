@@ -136,6 +136,7 @@ import org.elasticsearch.plugins.NetworkPlugin;
 import org.elasticsearch.plugins.PersistentTaskPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.plugins.PluginsService;
+import org.elasticsearch.plugins.ReloadablePlugin;
 import org.elasticsearch.plugins.RepositoryPlugin;
 import org.elasticsearch.plugins.ScriptPlugin;
 import org.elasticsearch.plugins.SearchPlugin;
@@ -587,10 +588,12 @@ public class Node implements Closeable {
                     b.bind(SnapshotShardsService.class).toInstance(snapshotShardsService);
                     b.bind(TransportNodesSnapshotsStatus.class).toInstance(nodesSnapshotsStatus);
                     b.bind(RestoreService.class).toInstance(restoreService);
-                    b.bind(RerouteService.class).toInstance(rerouteService);
+                    b.bind(ActionModule.class).toInstance(actionModule);
                 }
             );
             injector = modules.createInjector();
+
+            pluginsService.filterPlugins(ReloadablePlugin.class).forEach(x->x.openInject(injector));
 
             // TODO hack around circular dependencies problems in AllocationService
             clusterModule.getAllocationService().setGatewayAllocator(injector.getInstance(GatewayAllocator.class));

@@ -19,6 +19,7 @@
 
 package org.elasticsearch.plugins;
 
+import org.elasticsearch.common.inject.Injector;
 import org.elasticsearch.common.settings.Settings;
 
 /**
@@ -51,4 +52,6 @@ public interface ReloadablePlugin {
      *             if the offending call didn't happen.
      */
     void reload(Settings settings) throws Exception;
+
+    default void openInject(Injector injector) {};
 }

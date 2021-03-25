@@ -41,13 +41,13 @@ public class PluginsAndModules implements Writeable, ToXContentFragment {
     private final List<PluginInfo> modules;
 
     public PluginsAndModules(List<PluginInfo> plugins, List<PluginInfo> modules) {
-        this.plugins = Collections.unmodifiableList(plugins);
-        this.modules = Collections.unmodifiableList(modules);
+        this.plugins = plugins;
+        this.modules = modules;
     }
 
     public PluginsAndModules(StreamInput in) throws IOException {
-        this.plugins = Collections.unmodifiableList(in.readList(PluginInfo::new));
-        this.modules = Collections.unmodifiableList(in.readList(PluginInfo::new));
+        this.plugins = in.readList(PluginInfo::new);
+        this.modules = in.readList(PluginInfo::new);
     }
 
     @Override
