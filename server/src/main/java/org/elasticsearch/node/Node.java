@@ -92,6 +92,7 @@ import org.elasticsearch.core.internal.io.IOUtils;
 import org.elasticsearch.discovery.Discovery;
 import org.elasticsearch.discovery.DiscoveryModule;
 import org.elasticsearch.discovery.DiscoverySettings;
+import org.elasticsearch.dynamic.PluginDiscoveryService;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.env.NodeEnvironment;
 import org.elasticsearch.env.NodeMetaData;
@@ -245,7 +246,7 @@ public class Node implements Closeable {
      * then it wouldn't get the node name.
      */
     private final Logger logger;
-    private final Injector injector;
+    private Injector injector;
     private final Environment environment;
     private final NodeEnvironment nodeEnvironment;
     private final PluginsService pluginsService;
@@ -254,8 +255,28 @@ public class Node implements Closeable {
     private final LocalNodeFactory localNodeFactory;
     private final NodeService nodeService;
 
+    private final List<Setting<?>> additionalSettings;
+    private final List<String> additionalSettingsFilter;
+    private final Set<SettingUpgrader<?>> settingsUpgraders;
+
     public Node(Environment environment) {
         this(environment, Collections.emptyList(), true);
+    }
+
+    public List<Setting<?>> getAdditionalSettings() {
+        return additionalSettings;
+    }
+
+    public List<String> getAdditionalSettingsFilter() {
+        return additionalSettingsFilter;
+    }
+
+    public Set<SettingUpgrader<?>> getSettingsUpgraders() {
+        return settingsUpgraders;
+    }
+
+    public Collection<LifecycleComponent> getPluginLifecycleComponents() {
+        return pluginLifecycleComponents;
     }
 
     /**
@@ -336,8 +357,8 @@ public class Node implements Closeable {
             DeprecationLogger.setThreadContext(threadPool.getThreadContext());
             resourcesToClose.add(() -> DeprecationLogger.removeThreadContext(threadPool.getThreadContext()));
 
-            final List<Setting<?>> additionalSettings = new ArrayList<>(pluginsService.getPluginSettings());
-            final List<String> additionalSettingsFilter = new ArrayList<>(pluginsService.getPluginSettingsFilter());
+            additionalSettings = new ArrayList<>(pluginsService.getPluginSettings());
+            additionalSettingsFilter = new ArrayList<>(pluginsService.getPluginSettingsFilter());
             for (final ExecutorBuilder<?> builder : threadPool.builders()) {
                 additionalSettings.addAll(builder.getRegisteredSettings());
             }
@@ -348,7 +369,7 @@ public class Node implements Closeable {
             // this is as early as we can validate settings at this point. we already pass them to ScriptModule as well as ThreadPool
             // so we might be late here already
 
-            final Set<SettingUpgrader<?>> settingsUpgraders = pluginsService.filterPlugins(Plugin.class)
+            settingsUpgraders = pluginsService.filterPlugins(Plugin.class)
                     .stream()
                     .map(Plugin::getSettingUpgraders)
                     .flatMap(List::stream)
@@ -588,12 +609,14 @@ public class Node implements Closeable {
                     b.bind(SnapshotShardsService.class).toInstance(snapshotShardsService);
                     b.bind(TransportNodesSnapshotsStatus.class).toInstance(nodesSnapshotsStatus);
                     b.bind(RestoreService.class).toInstance(restoreService);
+                    b.bind(RerouteService.class).toInstance(rerouteService);
                     b.bind(ActionModule.class).toInstance(actionModule);
+                    b.bind(ModulesBuilder.class).toInstance(modules);
                 }
             );
             injector = modules.createInjector();
 
-            pluginsService.filterPlugins(ReloadablePlugin.class).forEach(x->x.openInject(injector));
+            //pluginsService.filterPlugins(ReloadablePlugin.class).forEach(x->x.openInject(injector));
 
             // TODO hack around circular dependencies problems in AllocationService
             clusterModule.getAllocationService().setGatewayAllocator(injector.getInstance(GatewayAllocator.class));
@@ -605,7 +628,8 @@ public class Node implements Closeable {
                 .map(injector::getInstance).collect(Collectors.toList()));
             resourcesToClose.addAll(pluginLifecycleComponents);
             resourcesToClose.add(injector.getInstance(PeerRecoverySourceService.class));
-            this.pluginLifecycleComponents = Collections.unmodifiableList(pluginLifecycleComponents);
+            this.pluginLifecycleComponents = pluginLifecycleComponents;
+            pluginLifecycleComponents.add(new PluginDiscoveryService(injector));
             client.initialize(injector.getInstance(new Key<Map<ActionType, TransportAction>>() {}), transportService.getTaskManager(),
                     () -> clusterService.localNode().getId(), transportService.getRemoteClusterService());
 
@@ -943,6 +967,10 @@ public class Node implements Closeable {
 
     public Injector injector() {
         return this.injector;
+    }
+
+    public void setInjector(Injector injector) {
+        this.injector = injector;
     }
 
     /**

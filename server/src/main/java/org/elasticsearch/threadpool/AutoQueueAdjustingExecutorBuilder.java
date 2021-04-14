@@ -137,7 +137,7 @@ public final class AutoQueueAdjustingExecutorBuilder extends ExecutorBuilder<Aut
     }
 
     @Override
-    AutoExecutorSettings getSettings(Settings settings) {
+    public AutoExecutorSettings getSettings(Settings settings) {
         final String nodeName = Node.NODE_NAME_SETTING.get(settings);
         final int size = sizeSetting.get(settings);
         final int initialQueueSize = queueSizeSetting.get(settings);
@@ -149,7 +149,7 @@ public final class AutoQueueAdjustingExecutorBuilder extends ExecutorBuilder<Aut
     }
 
     @Override
-    ThreadPool.ExecutorHolder build(final AutoExecutorSettings settings,
+    public ThreadPool.ExecutorHolder build(final AutoExecutorSettings settings,
                                     final ThreadContext threadContext) {
         int size = settings.size;
         int initialQueueSize = settings.initialQueueSize;
@@ -177,7 +177,7 @@ public final class AutoQueueAdjustingExecutorBuilder extends ExecutorBuilder<Aut
     }
 
     @Override
-    String formatInfo(ThreadPool.Info info) {
+    public String formatInfo(ThreadPool.Info info) {
         return String.format(
             Locale.ROOT,
             "name [%s], size [%d], queue size [%s]",

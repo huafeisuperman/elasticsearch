@@ -557,7 +557,7 @@ public class ActionModule extends AbstractModule {
         actions.register(RetentionLeaseActions.Renew.INSTANCE, RetentionLeaseActions.Renew.TransportAction.class);
         actions.register(RetentionLeaseActions.Remove.INSTANCE, RetentionLeaseActions.Remove.TransportAction.class);
 
-        return unmodifiableMap(actions.getRegistry());
+        return actions.getRegistry();
     }
 
     private ActionFilters setupActionFilters(List<ActionPlugin> actionPlugins) {

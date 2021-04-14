@@ -60,6 +60,10 @@ public class NamedWriteableRegistry {
      */
     private final Map<Class<?>, Map<String, Writeable.Reader<?>>> registry;
 
+    public Map<Class<?>, Map<String, Writeable.Reader<?>>> getRegistry() {
+        return registry;
+    }
+
     /**
      * Constructs a new registry from the given entries.
      */
@@ -94,7 +98,7 @@ public class NamedWriteableRegistry {
         // handle the last category
         registry.put(currentCategory, Collections.unmodifiableMap(readers));
 
-        this.registry = Collections.unmodifiableMap(registry);
+        this.registry = registry;
     }
 
     /**

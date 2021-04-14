@@ -39,7 +39,7 @@ public abstract class ExecutorBuilder<U extends ExecutorBuilder.ExecutorSettings
         this.name = name;
     }
 
-    protected String name() {
+    public String name() {
         return name;
     }
 
@@ -68,7 +68,7 @@ public abstract class ExecutorBuilder<U extends ExecutorBuilder.ExecutorSettings
      * @param settings the node-level settings
      * @return the executor settings object
      */
-    abstract U getSettings(Settings settings);
+    public abstract U getSettings(Settings settings);
 
     /**
      * Builds the executor with the specified executor settings.
@@ -77,7 +77,7 @@ public abstract class ExecutorBuilder<U extends ExecutorBuilder.ExecutorSettings
      * @param threadContext the current thread context
      * @return a new executor built from the specified executor settings
      */
-    abstract ThreadPool.ExecutorHolder build(U settings, ThreadContext threadContext);
+    public abstract ThreadPool.ExecutorHolder build(U settings, ThreadContext threadContext);
 
     /**
      * Format the thread pool info object for this executor.
@@ -85,9 +85,9 @@ public abstract class ExecutorBuilder<U extends ExecutorBuilder.ExecutorSettings
      * @param info the thread pool info object to format
      * @return a formatted thread pool info (useful for logging)
      */
-    abstract String formatInfo(ThreadPool.Info info);
+    public abstract String formatInfo(ThreadPool.Info info);
 
-    abstract static class ExecutorSettings {
+    public abstract static class ExecutorSettings {
 
         protected final String nodeName;
 

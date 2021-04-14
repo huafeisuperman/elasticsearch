@@ -40,6 +40,7 @@ import org.elasticsearch.tasks.TaskManager;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.transport.RemoteClusterService;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -65,7 +66,8 @@ public class NodeClient extends AbstractClient {
 
     public void initialize(Map<ActionType, TransportAction> actions, TaskManager taskManager, Supplier<String> localNodeId,
                            RemoteClusterService remoteClusterService) {
-        this.actions = actions;
+        this.actions = new HashMap<>();
+        this.actions.putAll(actions);
         this.taskManager = taskManager;
         this.localNodeId = localNodeId;
         this.remoteClusterService = remoteClusterService;
@@ -74,6 +76,10 @@ public class NodeClient extends AbstractClient {
     @Override
     public void close() {
         // nothing really to do
+    }
+
+    public Map<ActionType, TransportAction> getActions() {
+        return actions;
     }
 
     @Override

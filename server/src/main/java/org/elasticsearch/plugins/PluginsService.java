@@ -630,9 +630,22 @@ public class PluginsService {
             .map(p -> ((T)p.v2())).collect(Collectors.toList());
     }
 
-    public Tuple<PluginInfo, Plugin> addDynimicPlugin(Path path) throws Exception {
+    public List<Tuple<PluginInfo, Plugin>> getPlugins() {
+        return this.plugins;
+    }
+
+    public PluginsAndModules getInfo() {
+        return this.info;
+    }
+
+
+    public Tuple<PluginInfo, Plugin> loadPlugin(Path path) throws Exception {
         final Bundle bundle = readPluginBundle(new HashSet<>(), path, "plugin");
         Tuple<PluginInfo, Plugin> loaded = loadBundles(new HashSet<Bundle>(){{add(bundle);}}).get(0);
+        return loaded;
+    }
+
+    public Tuple<PluginInfo, Plugin> addDynamicPlugin(Tuple<PluginInfo, Plugin> loaded) {
         plugins.add(loaded);
         info.addPlugin(loaded.v1());
         return loaded;

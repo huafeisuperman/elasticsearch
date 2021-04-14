@@ -36,11 +36,11 @@ public class ThreadPoolInfo implements Writeable, Iterable<ThreadPool.Info>, ToX
     private final List<ThreadPool.Info> infos;
 
     public ThreadPoolInfo(List<ThreadPool.Info> infos) {
-        this.infos = Collections.unmodifiableList(infos);
+        this.infos = infos;
     }
 
     public ThreadPoolInfo(StreamInput in) throws IOException {
-        this.infos = Collections.unmodifiableList(in.readList(ThreadPool.Info::new));
+        this.infos = in.readList(ThreadPool.Info::new);
     }
 
     @Override
@@ -55,6 +55,10 @@ public class ThreadPoolInfo implements Writeable, Iterable<ThreadPool.Info>, ToX
 
     static final class Fields {
         static final String THREAD_POOL = "thread_pool";
+    }
+
+    public List<ThreadPool.Info> getInfos() {
+        return infos;
     }
 
     @Override

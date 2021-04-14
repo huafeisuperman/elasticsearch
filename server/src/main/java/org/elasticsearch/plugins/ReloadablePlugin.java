@@ -53,5 +53,4 @@ public interface ReloadablePlugin {
      */
     void reload(Settings settings) throws Exception;
 
-    default void openInject(Injector injector) {};
 }

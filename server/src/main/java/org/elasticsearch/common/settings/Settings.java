@@ -84,7 +84,7 @@ public final class Settings implements ToXContentFragment {
     public static final Settings EMPTY = new Builder().build();
 
     /** The raw settings from the full key to raw string value. */
-    private final Map<String, Object> settings;
+    private Map<String, Object> settings;
 
     /** The secure settings storage associated with these settings. */
     private final SecureSettings secureSettings;
@@ -1386,4 +1386,11 @@ public final class Settings implements ToXContentFragment {
         return o == null ? null : o.toString();
     }
 
+    public Map<String, Object> getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Map<String, Object> settings) {
+        this.settings = settings;
+    }
 }

@@ -82,7 +82,7 @@ public final class ScalingExecutorBuilder extends ExecutorBuilder<ScalingExecuto
     }
 
     @Override
-    ScalingExecutorSettings getSettings(Settings settings) {
+    public ScalingExecutorSettings getSettings(Settings settings) {
         final String nodeName = Node.NODE_NAME_SETTING.get(settings);
         final int coreThreads = coreSetting.get(settings);
         final int maxThreads = maxSetting.get(settings);
@@ -90,7 +90,7 @@ public final class ScalingExecutorBuilder extends ExecutorBuilder<ScalingExecuto
         return new ScalingExecutorSettings(nodeName, coreThreads, maxThreads, keepAlive);
     }
 
-    ThreadPool.ExecutorHolder build(final ScalingExecutorSettings settings, final ThreadContext threadContext) {
+    public ThreadPool.ExecutorHolder build(final ScalingExecutorSettings settings, final ThreadContext threadContext) {
         TimeValue keepAlive = settings.keepAlive;
         int core = settings.core;
         int max = settings.max;
@@ -109,7 +109,7 @@ public final class ScalingExecutorBuilder extends ExecutorBuilder<ScalingExecuto
     }
 
     @Override
-    String formatInfo(ThreadPool.Info info) {
+    public String formatInfo(ThreadPool.Info info) {
         return String.format(
             Locale.ROOT,
             "name [%s], core [%d], max [%d], keep alive [%s]",

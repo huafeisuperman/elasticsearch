@@ -127,6 +127,10 @@ public class TaskManager implements ClusterStateApplier {
         return task;
     }
 
+    public List<String> getTaskHeaders() {
+        return taskHeaders;
+    }
+
     private void registerCancellableTask(Task task) {
         CancellableTask cancellableTask = (CancellableTask) task;
         CancellableTaskHolder holder = new CancellableTaskHolder(cancellableTask);

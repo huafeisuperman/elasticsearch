@@ -30,7 +30,7 @@ import static java.util.Objects.requireNonNull;
  * A registry from String to some class implementation. Used to ensure implementations are registered only once.
  */
 public class NamedRegistry<T> {
-    private final Map<String, T> registry = new HashMap<>();
+    private Map<String, T> registry = new HashMap<>();
     private final String targetName;
 
     public NamedRegistry(String targetName) {
@@ -55,5 +55,9 @@ public class NamedRegistry<T> {
                 register(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    public void setRegistry(Map<String, T> registry) {
+        this.registry = registry;
     }
 }

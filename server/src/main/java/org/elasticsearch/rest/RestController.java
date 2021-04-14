@@ -67,7 +67,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
 
     private final PathTrie<MethodHandlers> handlers = new PathTrie<>(RestUtils.REST_DECODER);
 
-    private final UnaryOperator<RestHandler> handlerWrapper;
+    private UnaryOperator<RestHandler> handlerWrapper;
 
     private final NodeClient client;
 
@@ -77,8 +77,20 @@ public class RestController implements HttpServerTransport.Dispatcher {
     private final Set<RestHeaderDefinition> headersToCopy;
     private final UsageService usageService;
 
+    public Set<RestHeaderDefinition> getHeadersToCopy() {
+        return headersToCopy;
+    }
+
+    public UnaryOperator<RestHandler> getHandlerWrapper() {
+        return handlerWrapper;
+    }
+
+    public void setHandlerWrapper(UnaryOperator<RestHandler> handlerWrapper) {
+        this.handlerWrapper = handlerWrapper;
+    }
+
     public RestController(Set<RestHeaderDefinition> headersToCopy, UnaryOperator<RestHandler> handlerWrapper,
-            NodeClient client, CircuitBreakerService circuitBreakerService, UsageService usageService) {
+                          NodeClient client, CircuitBreakerService circuitBreakerService, UsageService usageService) {
         this.headersToCopy = headersToCopy;
         this.usageService = usageService;
         if (handlerWrapper == null) {

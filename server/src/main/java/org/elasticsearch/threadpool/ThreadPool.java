@@ -154,6 +154,18 @@ public class ThreadPool implements Scheduler {
 
     private final ScheduledThreadPoolExecutor scheduler;
 
+    public Map<String, ExecutorBuilder> getBuilders() {
+        return builders;
+    }
+
+    public Map<String, ExecutorHolder> getExecutors() {
+        return executors;
+    }
+
+    public ThreadPoolInfo getThreadPoolInfo() {
+        return threadPoolInfo;
+    }
+
     public Collection<ExecutorBuilder> builders() {
         return Collections.unmodifiableCollection(builders.values());
     }
@@ -197,7 +209,7 @@ public class ThreadPool implements Scheduler {
             }
             builders.put(builder.name(), builder);
         }
-        this.builders = Collections.unmodifiableMap(builders);
+        this.builders = builders;
 
         threadContext = new ThreadContext(settings);
 
@@ -213,7 +225,7 @@ public class ThreadPool implements Scheduler {
         }
 
         executors.put(Names.SAME, new ExecutorHolder(DIRECT_EXECUTOR, new Info(Names.SAME, ThreadPoolType.DIRECT)));
-        this.executors = unmodifiableMap(executors);
+        this.executors = executors;
 
         final List<Info> infos =
                 executors
@@ -598,7 +610,7 @@ public class ThreadPool implements Scheduler {
         }
     }
 
-    static class ExecutorHolder {
+    public static class ExecutorHolder {
         private final ExecutorService executor;
         public final Info info;
 
