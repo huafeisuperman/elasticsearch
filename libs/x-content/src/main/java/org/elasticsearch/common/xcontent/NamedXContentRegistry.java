@@ -73,7 +73,11 @@ public class NamedXContentRegistry {
         }
     }
 
-    private final Map<Class<?>, Map<String, Entry>> registry;
+    private Map<Class<?>, Map<String, Entry>> registry;
+
+    public Map<Class<?>, Map<String, Entry>> getRegistry() {
+        return registry;
+    }
 
     public NamedXContentRegistry(List<Entry> entries) {
         if (entries.isEmpty()) {
@@ -108,7 +112,7 @@ public class NamedXContentRegistry {
         // handle the last category
         registry.put(currentCategory, unmodifiableMap(parsers));
 
-        this.registry = unmodifiableMap(registry);
+        this.registry = registry;
     }
 
     /**
